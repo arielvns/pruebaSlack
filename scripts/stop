@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import grp
+from colors import bcolors
+
+DOCKER_IMAGE = "halsbrook"
+DOCKER_NAME = "app"
+
+if __name__ == "__main__":
+    # -----------------------------------
+    # Levantando instancia
+    # ----------------------------------------------------------------------------
+    
+    print bcolors.HEADER +  '=' * 70 + "\n" + bcolors.ENDC
+    print bcolors.HEADER + "\n Bajando instancia " + DOCKER_NAME + " " + bcolors.ENDC
+    os.system("docker stop " + DOCKER_NAME + " > /dev/null ")  
+
+    print bcolors.HEADER + "\n Entorno totalmente bajado"  + bcolors.ENDC
+    print bcolors.HEADER +  '=' * 70 + "\n" + bcolors.ENDC
+
+# vim: se ft=python ts=4 sw=4 ai expandtab:

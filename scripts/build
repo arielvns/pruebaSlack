@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import grp
+from colors import bcolors
+
+bashCommand = "cd .."
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
+
+
+def build(params):
+
+    current_env = params["env"]
+
+    #
+    # Clonamos repo
+    #
+
+    bcolors.OKBLUE + "Clonando repo..." + bcolors.ENDC
+    
+    if os.path.isdir(ROOT_DIR + "/Empyrean") == False:
+        os.system("cd ..") 
+        os.system("git clone " + params['git_repo'])
+        os.chdir("Empyrean")
+        os.system("git checkout " + params["git_branch"])
+    else:
+        print bcolors.WARNING + "[SKIPPING] Ya existe el repo." + bcolors.ENDC
+
+    #
+    # Creamos imagen para levantar instancia
+    #
+    
+    bcolors.OKBLUE + "Generando imagen..." + bcolors.ENDC
+    
+    os.chdir("..")
+    os.system("ls -l")
+    if os.path.isfile("Dockerfile") == True:
+        os.system("docker build . -t halsbrook")
+    else:
+        print bcolors.WARNING + "[SKIPPING ] No existe Dockerfile" + bcolors.ENDC
+
+
+if __name__ == "__main__":
+    # -----------------------------------
+    # Conf
+    # ----------------------------------------------------------------------------
+
+    params = {
+        'env': 'dev',
+        'root': os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + "/../"),
+        'uid': os.getuid(),
+        'gid': os.getgid(),
+        'git_repo'  : 'git@github.com:Halsbrook/Empyrean.git',
+        'git_branch': 'master',
+    }
+
+    if len(sys.argv) == 2:
+        params["env"] = sys.argv[1]
+    else:
+        params["env"] = 'prod'
+
+    print bcolors.OKGREEN + "\n\nBuilding para el entorno [" + params['env'] + "]" + bcolors.ENDC
+    print bcolors.OKGREEN +  '=' * 70 + "\n" + bcolors.ENDC
+    
+    build(params)
+   
+    print bcolors.OKGREEN + "\n\n Finalizado building para el entorno [" + params['env'] + "]" + bcolors.ENDC
+    print bcolors.OKGREEN +  '=' * 70 + "\n" + bcolors.ENDC
+
+# vim: se ft=python ts=4 sw=4 ai expandtab:
