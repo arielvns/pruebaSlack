@@ -16,13 +16,15 @@ ENV APACHE_CONF_DIR=/etc/apache2 \
 COPY entrypoint.sh /sbin/entrypoint.sh
 
 RUN	\
-	BUILD_DEPS='software-properties-common python-software-properties' \
-    && dpkg-reconfigure locales \
+	apt-get update \
+	&& BUILD_DEPS='software-properties-common python-software-properties' \
+    	&& dpkg-reconfigure locales \
 	&& apt-get install --no-install-recommends -y $BUILD_DEPS \
 	&& add-apt-repository -y ppa:ondrej/php \
-	&& add-apt-repository -y ppa:ondrej/apache2 \
-	&& apt-get update \
-    && apt-get install -y curl apache2 vim libapache2-mod-php5.6 php5.6-cli php5.6-readline php5.6-mbstring php5.6-intl php5.6-zip php5.6-xml php5.6-json php5.6-curl php5.6-mcrypt php5.6-gd php5.6-pgsql php5.6-mysql php-pear \
+	&& add-apt-repository -y ppa:ondrej/apache2
+
+
+RUN  apt-get install -y curl apache2 vim libapache2-mod-php5.6 php5.6-cli php5.6-readline php5.6-mbstring php5.6-intl php5.6-zip php5.6-xml php5.6-json php5.6-curl php5.6-mcrypt php5.6-gd php5.6-pgsql php5.6-mysql php-pear \
     && apt-get install -y  php5.6-mcrypt php5.6-xdebug php5.6-memcached php-xdebug \
     && apt-get install -y  imagemagick jpegoptim libjpeg-progs autoconf automake libtool nasm make pkg-config git \
     # Apache settings
@@ -41,13 +43,12 @@ RUN	\
 	&& ln -sf /dev/stdout /var/log/apache2/access.log \
 	&& ln -sf /dev/stderr /var/log/apache2/error.log \
 	&& chmod 755 /sbin/entrypoint.sh \
-    && chown www-data:www-data ${PHP_DATA_DIR} -Rf
+	&& chown www-data:www-data ${PHP_DATA_DIR} -Rf \
+	&& chown www-data:www-data /var/www/app -Rf
 
 COPY ./configs/apache2.conf ${APACHE_CONF_DIR}/apache2.conf
 COPY ./configs/app.conf ${APACHE_CONF_DIR}/sites-enabled/app.conf
 COPY ./configs/php.ini  ${PHP_CONF_DIR}/apache2/conf.d/custom.ini
-
-#VOLUME ["/var/www/app"]
 
 WORKDIR /var/www/app/
 

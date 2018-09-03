@@ -14,7 +14,7 @@ def checkImage( image, port ):
     exist = os.system("docker images -q " + image + " > /dev/null")
     os.system("cd ..")
 #    ROOT_DIR        = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
-    dir_app = ROOT_DIR + "/Empyrean" 
+    dir_app = ROOT_DIR[:-8] + "/Empyrean" 
     os.chdir(dir_app)
     os.system("ls")
 
@@ -22,7 +22,10 @@ def checkImage( image, port ):
         #--rm = borra instancia apenas se baja, -p setea puerto
         #--name = define name del container
         print bcolors.OKGREEN + " Levantando instancia en puerto " + port + " " + bcolors.ENDC 
-        os.system("docker run --name " + DOCKER_NAME + " -v " +  + "Empyrean:/var/www/app -d --rm -p " + port + ":80 " + image + " > /dev/null")
+        cmd     = "docker run -v " + dir_app + ":/var/www/app -d --rm -p " + port + ":80 --name " + DOCKER_NAME + " " + DOCKER_IMAGE
+        print cmd
+        os.system(cmd) #+ image + " > /dev/null")
+
     else: 
         print bcolors.FAIL + "[ ERROR ] No existe imagen de docker a usar " + bcolors.ENDC
 
@@ -42,7 +45,7 @@ if __name__ == "__main__":
 
     checkImage(DOCKER_IMAGE, port) 
 
-    print bcolors.OKGREEN + "\n\n Finalizo levante de instancia "  + bcolors.ENDC
+    print bcolors.OKGREEN + "\n\n Finalizo levante de entorno "  + bcolors.ENDC
     print bcolors.OKGREEN +  '=' * 70 + "\n" + bcolors.ENDC
 
 # vim: se ft=python ts=4 sw=4 ai expandtab:
